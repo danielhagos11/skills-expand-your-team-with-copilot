@@ -569,6 +569,21 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <button class="share-btn share-btn-twitter tooltip" data-activity="${name}" aria-label="Share on Twitter">
+          𝕏
+          <span class="tooltip-text">Share on X (Twitter)</span>
+        </button>
+        <button class="share-btn share-btn-whatsapp tooltip" data-activity="${name}" aria-label="Share on WhatsApp">
+          💬
+          <span class="tooltip-text">Share on WhatsApp</span>
+        </button>
+        <button class="share-btn share-btn-copy tooltip" data-activity="${name}" aria-label="Copy link">
+          🔗
+          <span class="tooltip-text">Copy link</span>
+        </button>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -586,6 +601,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    activityCard.querySelector(".share-btn-twitter").addEventListener("click", () => {
+      shareActivity("twitter", name, details);
+    });
+    activityCard.querySelector(".share-btn-whatsapp").addEventListener("click", () => {
+      shareActivity("whatsapp", name, details);
+    });
+    activityCard.querySelector(".share-btn-copy").addEventListener("click", (event) => {
+      shareActivity("copy", name, details, event.currentTarget);
+    });
 
     activitiesList.appendChild(activityCard);
   }
@@ -797,6 +823,36 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     );
+  }
+
+  // Share activity on social platforms
+  function shareActivity(platform, name, details, copyButton) {
+    const pageUrl = window.location.href.split("#")[0];
+    const shareUrl = `${pageUrl}#${encodeURIComponent(name)}`;
+    const shareText = `Check out "${name}" at Mergington High School! ${details.description}`;
+
+    if (platform === "twitter") {
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+      window.open(twitterUrl, "_blank", "noopener,noreferrer");
+    } else if (platform === "whatsapp") {
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    } else if (platform === "copy") {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        if (copyButton) {
+          const originalText = copyButton.textContent.trim();
+          copyButton.textContent = "✔";
+          copyButton.classList.add("share-btn-copied");
+          setTimeout(() => {
+            copyButton.textContent = "🔗";
+            copyButton.classList.remove("share-btn-copied");
+          }, 2000);
+        }
+        showMessage("Link copied to clipboard!", "success");
+      }).catch(() => {
+        showMessage("Failed to copy link.", "error");
+      });
+    }
   }
 
   // Show message function
