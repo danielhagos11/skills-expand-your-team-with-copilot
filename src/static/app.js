@@ -840,7 +840,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (platform === "copy") {
       navigator.clipboard.writeText(shareUrl).then(() => {
         if (copyButton) {
-          const originalText = copyButton.textContent.trim();
           copyButton.textContent = "✔";
           copyButton.classList.add("share-btn-copied");
           setTimeout(() => {
@@ -850,7 +849,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         showMessage("Link copied to clipboard!", "success");
       }).catch(() => {
-        showMessage("Failed to copy link.", "error");
+        showMessage("Failed to copy link. Please try again or check browser permissions.", "error");
       });
     }
   }
